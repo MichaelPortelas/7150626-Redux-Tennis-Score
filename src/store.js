@@ -7,23 +7,10 @@ const initialState = {
   player2: 0,
   advantage: null,
   winner: null,
+  // le jeu est en pause à l'initialisation
   playing: true,
-  // historique des jeux joués
-  history: [
-    // { player1: 15, player2: 40, winner: "player2" }
-  ],
+  history: [],
 };
-
-// actions creators
-
-export const playPause = () => ({ type: "playPause" });
-
-export const restartGame = () => ({ type: "restart" });
-
-export const pointScored = (player) => ({
-  type: "pointScored",
-  payload: { player: player },
-});
 
 function reducer(state = initialState, action) {
   if (action.type === "restart") {
@@ -44,12 +31,9 @@ function reducer(state = initialState, action) {
       draft.playing = true;
     });
   }
-  if (action.type === "playPause") {
-    if (state.winner) {
-      return state;
-    }
+  if (action.type === "setPlaying") {
     return produce(state, (draft) => {
-      draft.playing = !draft.playing;
+      draft.playing = action.payload;
     });
   }
   if (action.type === "pointScored") {

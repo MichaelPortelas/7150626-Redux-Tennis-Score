@@ -1,19 +1,34 @@
 // on import useDispatch depuis react-redux
-import { useDispatch } from "react-redux";
-import { playPause } from "./store";
+import { useStore } from "react-redux";
+import { setPlaying, pointScored } from "./actions";
 
 export function PlayPauseButton() {
-  // on utilise le hooks useDispatch dans notre composant
-  // pour récupérer la fonction dispatch de redux
-  const dispatch = useDispatch();
+  const store = useStore();
 
   return (
     <button
       className="button"
       onClick={() => {
-        // au clique sur le bouton on exécute la fonction dispatch
-        // avec une action.
-        dispatch(playPause());
+        const isPlaying = store.getState().playing;
+        if (isPlaying) {
+          // déja en train de jouer on ne fait rien
+          return;
+        }
+        //on indique que la partie est en cours
+        store.dispatch(setPlaying(true));
+        // on utilise setTimeout pour attendre 2 secondes
+        window.setTimeout(() => {
+          // le jeu est_il toujour en cours ?
+          if (store.getState().playing === false) {
+            //si non on ne fait rien
+            return;
+          }
+          // si oui on marque un point aléatoire
+          const pointWinner = Math.random() > 0.5 ? "player1" : "player2";
+          store.dispatch(pointScored(pointWinner));
+          // on remet le jeu en pause
+          store.dispatch(setPlaying(false));
+        }, 2000)
       }}
     >
       Pause / Reprendre
